@@ -1,0 +1,10 @@
+streamlit
+opencv-python-headless
+matplotlib
+Pillow
+numpy
+easyocr
+ultralytics
+fpdf
+Flask
+ultralytics

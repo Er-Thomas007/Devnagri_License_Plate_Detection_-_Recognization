@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Er. Thomas Basyal Welcome to the License Plate Recognition System</h1>
+        
+        <div class="button-row">
+            <a href="{{ url_for('upload') }}" class="button">Upload Image or Video</a>
+            <a href="{{ url_for('capture') }}" class="button">Capture from Webcam</a>
+        </div>
+        <div class="link-row">
+            <a href="{{ url_for('about') }}" class="button">About Us</a>
+            <a href="{{ url_for('contact') }}" class="button">Contact</a>
+            <a href="{{ url_for('faqs') }}" class="button">FAQs</a>
+            <a href="{{ url_for('support') }}" class="button">Support</a>
+            <a href="{{ url_for('privacy_policy') }}" class="button">Privacy Policy</a>
+        </div>
+    </div>
+</body>
+</html>

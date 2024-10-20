@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture from Webcam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Capture from Webcam</h1>
+        <video id="webcam" autoplay></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <div class="button-row">
+            <button id="capture-button" class="button">Capture Image</button>
+            <button id="process-button" class="button" disabled>Process Image</button>
+        </div>
+        <div id="captured-image-container" style="display:none;">
+            <h2>Captured Image</h2>
+            <img id="captured-image" class="image-label" src="">
+        </div>
+        <div id="results-container" style="display:none;">
+            <h1>Processing Results</h1>
+            <div class="image-row">
+                <div class="image-box">
+                    <h2>Input Image</h2>
+                    <img id="captured-image-result" src="" alt="Input Image">
+                </div>
+                <div class="image-box">
+                    <h2>Detected Image</h2>
+                    <img id="processed-image" src="" alt="Detected Image">
+                </div>
+            </div>
+            <div class="results-grid">
+                <div class="results-box">
+                    <h2>Detected Characters (English)</h2>
+                    <pre id="english-text" class="results-text"></pre>
+                </div>
+                <div class="results-box">
+                    <h2>Detected Characters (Nepali)</h2>
+                    <pre id="nepali-text" class="results-text"></pre>
+                </div>
+                <div class="results-box province-info-box" id="province-info" style="display:none;">
+                    <h2>Province Information</h2>
+                    <p id="province-info-text"></p>
+              
+            <div class="button-row">
+                <a href="{{ url_for('home') }}" class="button">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('canvas');
+            const captureButton = document.getElementById('capture-button');
+            const processButton = document.getElementById('process-button');
+            const capturedImage = document.getElementById('captured-image');
+            const capturedImageContainer = document.getElementById('captured-image-container');
+            const resultsContainer = document.getElementById('results-container');
+            const processedImage = document.getElementById('processed-image');
+            const englishText = document.getElementById('english-text');
+            const nepaliText = document.getElementById('nepali-text');
+            const provinceInfoBox = document.getElementById('province-info');
+            const provinceInfoText = document.getElementById('province-info-text');
+            let capturedImageData = null;
+
+            // Access webcam and display video stream
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error('Error accessing webcam: ', err);
+                });
+
+            // Capture image from webcam
+            captureButton.addEventListener('click', function() {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                capturedImageData = canvas.toDataURL('image/png');
+                capturedImage.src = capturedImageData;
+                document.getElementById('captured-image-result').src = capturedImageData; // Set result image src
+                capturedImageContainer.style.display = 'block';
+                processButton.disabled = false;
+            });
+
+            // Process captured image
+            processButton.addEventListener('click', function() {
+                if (capturedImageData) {
+                    fetch('{{ url_for('process_image_route') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ image: capturedImageData })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsContainer.style.display = 'block';
+                        processedImage.src = `data:image/jpeg;base64,${data.processed_image}`;
+                        englishText.textContent = data.english_text;
+                        nepaliText.textContent = data.nepali_text;
+                        provinceInfoBox.style.display = 'block';
+                        provinceInfoText.textContent = data.is_bagmati ? 'This vehicle belongs to Bagmati Pradesh.' : 'This vehicle does not belong to Bagmati Pradesh.';
+                    })
+                    .catch(err => {
+                        console.error('Error processing image: ', err);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

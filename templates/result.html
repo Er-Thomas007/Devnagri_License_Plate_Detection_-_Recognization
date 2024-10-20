@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Processing Results</h1>
+        <div class="image-row">
+            <div class="image-box">
+                <h2>Input Image</h2>
+                <img src="data:image/jpeg;base64,{{ input_img_data }}" alt="Input Image">
+            </div>
+            <div class="image-box">
+                <h2>Detected Image</h2>
+                <img src="data:image/jpeg;base64,{{ processed_img_data }}" alt="Detected Image">
+            </div>
+        </div>
+        <div class="results-row">
+            <div class="results-box">
+                <h2>Detected Characters (English)</h2>
+                <pre class="results-text">{{ english_text }}</pre>
+            </div>
+            <div class="results-box">
+                <h2>Detected Characters (Nepali)</h2>
+                <pre class="results-text">{{ nepali_text }}</pre>
+            </div>
+        </div>
+        <div class="province-info">
+            <h2>Province: {{ 'Bagmati' if is_bagmati else 'Not Bagmati' }}</h2>
+        </div>
+        <a href="{{ url_for('upload') }}" class="button">Upload Another Image</a>
+    </div>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
